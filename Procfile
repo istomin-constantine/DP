@@ -1,1 +1,1 @@
-web: gunicorn DP.wsgi --log-file -
+web: gunicorn dpproj.wsgi --log-file -
