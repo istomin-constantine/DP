@@ -6,4 +6,4 @@ from django.views import View
 
 def index(request):
     #client_addr = request.META.get('REMOTE_ADDR')
-    return hres("hello world")
+    return hres("HEllo friend")
