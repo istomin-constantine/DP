@@ -5,5 +5,6 @@ from django.http import HttpResponse as hres
 from django.views import View
 
 def index(request):
-    #client_addr = request.META.get('REMOTE_ADDR')
-    return hres("HEllo friend")
+    client_addr = request.META.get('REMOTE_ADDR')
+    return hres(client_addr)
+    #return hres("HEllo friend")
