@@ -6,6 +6,7 @@ import requests
 import speedtest
 from django.http import HttpResponse as hres
 from django.http import JsonResponse
+from django.http import request
 from django.shortcuts import render
 from django.views import View
 
@@ -22,12 +23,15 @@ def testspeed(request):
         }
         return JsonResponse(response)
 
-def get_ip():
+def get_ip_local():
     response = requests.get('https://api64.ipify.org?format=json').json()
     return response["ip"]
 
+def get_ip(request):
+    return(request.META.get('REMOTE_ADDR'))
+
 def index(request):
-    client_addr = get_ip()
+    client_addr = get_ip(request)
 
     response = requests.get(f'https://ipapi.co/{client_addr}/json/').json()
         
