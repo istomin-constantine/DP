@@ -8,76 +8,12 @@
     {% load static %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'reguser/css_index.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="crossorigin=""/>
+    <link rel="icon" href="{% static 'reguser/icon.ico' %}">
     <title>ipprotocol</title>
 </head>
-<script type="text/javascript">
-  $(document).ready(function () {
-      $("#ajax-text-me").click(function() {
-          document.getElementById('changetext').innerHTML = 'Retrieving data...'
-          var testConnectionSpeed = {
-            imageAddr : "https://upload.wikimedia.org/wikipedia/commons/a/a6/Brandenburger_Tor_abends.jpg", // this is just an example, you rather want an image hosted on your server
-            downloadSize : 2707459, // Must match the file above (from your server ideally)
-            run:function(mbps_max,cb_gt,cb_lt){
-              testConnectionSpeed.mbps_max = parseFloat(mbps_max) ? parseFloat(mbps_max) : 0;
-              testConnectionSpeed.cb_gt = cb_gt;
-              testConnectionSpeed.cb_lt = cb_lt;
-              testConnectionSpeed.InitiateSpeedDetection();
-            },
-            InitiateSpeedDetection: function() {
-              window.setTimeout(testConnectionSpeed.MeasureConnectionSpeed, 1);
-            },
-            result:function(){
-              var duration = (endTime - startTime) / 1000;
-              var bitsLoaded = testConnectionSpeed.downloadSize * 8;
-              var speedBps = (bitsLoaded / duration).toFixed(2);
-              var speedKbps = (speedBps / 1024).toFixed(2);
-              var speedMbps = (speedKbps / 1024).toFixed(2);
-              if(speedMbps >= (testConnectionSpeed.max_mbps ? testConnectionSpeed.max_mbps : 1) ){
-                testConnectionSpeed.cb_gt ? testConnectionSpeed.cb_gt(speedMbps) : false;
-              }else {
-                testConnectionSpeed.cb_lt ? testConnectionSpeed.cb_lt(speedMbps) : false;
-              }
-            },
-            MeasureConnectionSpeed:function() {
-              var download = new Image();
-              download.onload = function () {
-                  endTime = (new Date()).getTime();
-                  testConnectionSpeed.result();
-              }
-              startTime = (new Date()).getTime();
-              var cacheBuster = "?nnn=" + startTime;
-              download.src = testConnectionSpeed.imageAddr + cacheBuster;
-            }
-          }
-
-
-
-
-          // start test immediatly, you could also call this on any event or whenever you want
-          testConnectionSpeed.run(1.5, function(mbps){console.log(">= 1.5Mbps ("+mbps+"Mbps)")}, function(mbps){console.log("< 1.5Mbps("+mbps+"Mbps)")} )
-          //document.getElementById('changetext').innerHTML = `Your download speed is ${measureConnectionSpeed()}`
-          /*
-          $.ajax({
-              type: 'GET',
-              async: true,
-              url: '/ajax/',
-              data: "param1=value1&param2=value2;",
-              success: function(data) {
-                document.getElementById('changetext').innerHTML = `Your download speed is: <span style="color: green;">${data['dl']}</span> Mbit/s and your upload speed is: <span style="color: purple;">${data['up']}</span> Mbit/s`
-                /*
-                <span style="color: red;">o</span>
-                  $("#changetext").append(data['dl']);
-                  $("#changetext").append(data['up']);
-                
-
-              },
-              dataType: 'json',
-          });
-          */
-      });
-  });
-</script>
-<body>
+<script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""></script>
+<body onload="map()">
     <nav class="navbar navbar-light bg-light">
        <form class="container-fluid justify-content-start">
             <a class="navbar-brand" onselectstart="return false" unselectable="on"><span unselectable="on" style="color:green">ip</span>protocol</a>
@@ -87,29 +23,44 @@
         </form>
     </nav>
     
-    <div class="container mx-auto" style="max-width:85%; margin-top: 80px;">
+    <div class="container mx-auto" style="max-width:95%; margin-top: 80px;">
         <div class="row"style="border:1px solid white; margin-bottom:40px;">
             <div class="col" style="border:1px solid white;">
                 <div class="card" style="padding: 0;">
-                    <h5 class="card-title mx-auto" style="padding:0%; font-size: 80px;">{{ip}}</h5>
+                    <h5 class="card-title mx-auto" style="padding:0%; font-size: 5vmax;">{{ip}}</h5>
                     <div class="card-body text-center"style='font-size:30px'>You are using {{protocol}} protocol</div>
                 </div>
               </div>
         </div>
         <div class="row"style="border:1px solid white; margin-bottom:40px;">
+
+          <div class="card" style="padding: 0; margin-bottom: 15px;">
+            <h5 class="card-title mx-auto" id = 'changetext' style="padding:0%; font-size: 40px; margin:5px;">Test your connection speed</h5>
+          </div>
+          
           <div class="col" style="border:1px solid white;">
               <div class="card" style="padding: 0;">
-                  <h5 class="card-title mx-auto" id = 'changetext' style="padding:0%; font-size: 40px;">Test your connection speed</h5>
-                  <button id ="ajax-text-me">bebra</button>
+                  <h5 class="card-title mx-auto" id = 'download' style="padding:0%; font-size: 40px;">Download</h5>
               </div>
             </div>
+            <div class="col" style="border:1px solid white;">
+              <div class="card" style="padding: 0;">
+                  <h5 class="card-title mx-auto" id = 'upload' style="padding:0%; font-size: 40px;">Upload</h5>
+              </div>
+            </div>
+            <button id ="speed_test">Test your might</button>
         </div>
         <div class="row"style="border:1px solid white; max-height: 100%">
-          <div class="col" style="border:1px solid white; max-height: 100%; margin-right:10px;">
+          <div class="col" style="border:1px solid white; max-height: 100%; margin-right:10px;" id ='map'>
+            
+                      
+
+            <!--
             <div class="card" style="padding: 0;" id="ajax-text-me">
-                <h5 class="card-title mx-auto" style="padding:0%; font-size: 80px;">bebra left</h5>
+                <h5 class="card-title mx-auto" style="padding:0%; font-size: 3vmax;"></h5>
                 <div class="card-body text-center" style='font-size:30px'>Your download speed is {{dl}} your upload speed is {{up}}</div>
             </div>
+            -->
           </div>
           <div class="col" style="border:1px solid white; max-height: 100%; margin-left:10px;">
             <div class="card" style="padding: 0;">
@@ -129,6 +80,123 @@
 
 
 </body>
+<script type="text/javascript">
+
+const button = document.querySelector('#speed_test')
+const size = 10473459 * 8
+const TEST_COUNT = 20
+
+let average = 0
+
+let test_results = []
+
+function loadImage(){
+  return new Promise((resolve, reject)=>{
+    let image = new Image()
+    image.src = 'https://ipprotocol.online/static/reguser/10mb.png?' + parseInt(Math.random() * 10000)
+    let startTime = Date.now()
+    image.onload = function(){
+      let endtime = Date.now()
+      console.log(endtime-startTime) 
+      resolve((endtime - startTime)/1000)
+  }
+    image.onerror = function(err){
+      reject(err)
+    }
+  })
+}
+
+async function getLoadSpeed(){
+  let loadTime = await loadImage()
+  if (loadTime < 1) loadTime = 1
+  let speed_bps = size / loadTime
+  let speed_kbps = speed_bps / 1000
+  let speed_mbps = speed_kbps / 1000
+  return speed_mbps
+}
+
+function getAvgSpeed(){
+  let sum = test_results.reduce((a, b) => a + b, 0)
+  return (sum / test_results.length).toFixed(2)
+}
+
+const upload_button = document.querySelector('#speed_test_upload')
+
+function checkUploadSpeed( iterations, update ) {
+    //var average = 0,
+        index = 0,
+        timer = window.setInterval( check, 4000 ); //check every 5 seconds
+    check();
+
+    function check() {
+        var xhr = new XMLHttpRequest(),
+            url = 'ipprotocol.online?cache=' + Math.floor( Math.random() * 10000 ), //random number prevents url caching
+            data = getRandomString( 1 ), //1 meg POST size handled by all servers
+            startTime,
+            speed = 0;
+        xhr.onreadystatechange = function ( event ) {
+            if( xhr.readyState == 4 ) {
+                speed = Math.round( 1024 / ( ( new Date() - startTime ) / 1000 ) );
+                average == 0 
+                    ? average = speed 
+                    : average = Math.round( ( average + speed ) / 2 );
+                update( speed, average );
+                index++;
+                if( index == iterations ) {
+                    document.getElementById('upload').innerText = `Upload: ${(average/1000).toFixed(2)} Mbps`
+                    window.clearInterval( timer );
+                };
+            };
+        };
+        xhr.open( 'POST', url, true );
+        startTime = new Date();
+        xhr.send( data );
+    };
+
+    function getRandomString( sizeInMb ) {
+        var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_+`-=[]\{}|;':,./<>?", //random data prevents gzip effect
+            iterations = sizeInMb * 1024 * 1024, //get byte count
+            result = '';
+        for( var index = 0; index < iterations; index++ ) {
+            result += chars.charAt( Math.floor( Math.random() * chars.length ) );
+        };     
+        return result;
+    };
+};
+
+
+function map(){
+  let location = {lat: "{{ latitude }}", lon: "{{ longitude }}"}
+  const map = L.map('map').setView([location.lat, location.lon], 13);
+  const tileURL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const tiles = L.tileLayer(tileURL)
+  tiles.addTo(map,"bebra")
+
+  let circle = L.circle([location.lat, location.lon], {
+    color: 'red',
+    fillColor: '#f03',
+    fillOpacity: 0.5,
+    radius: 1500
+  }).addTo(map);
+  console.log(location)
+}
+
+button.addEventListener('click', async function(){
+
+  for(let i = 0; i < TEST_COUNT; i++){
+    let speedo = await getLoadSpeed()
+    test_results.push(speedo)
+    document.getElementById("download").innerText = speedo.toFixed(2)
+  }
+  document.getElementById("download").innerText = `Download: ${getAvgSpeed()} Mbps` 
+
+  checkUploadSpeed( 20, function ( speed, average ) {
+        document.getElementById('upload').textContent = (speed/1000).toFixed(2);
+    } );
+  
+})
+
+</script>
 </html>
 
 <!--
