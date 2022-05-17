@@ -130,7 +130,7 @@
     function check() {
       var xhr = new XMLHttpRequest(),
         url = 'ipprotocol.online?cache=' + Math.floor(Math.random() * 10000), //random number prevents url caching
-        data = getRandomString(1), //1 meg POST size handled by all servers
+        data = getRandomString(10), //1 meg POST size handled by all servers
         startTime,
         speed = 0;
       xhr.onreadystatechange = function (event) {
