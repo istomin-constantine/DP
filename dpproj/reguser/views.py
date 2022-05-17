@@ -108,7 +108,6 @@ def statistics(request):
     for i in values_countries:
         explode.append(0.05)
         colors.append('black')
-    
 
     fe = font_manager.FontEntry(
         fname='reguser/static/reguser/BigBlue.ttf',
