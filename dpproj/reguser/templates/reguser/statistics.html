@@ -12,40 +12,47 @@
     <title>ipprotocol</title>
 </head>
 <body>
-    <nav class="navbar navbar-light bg-light">
+    <nav class="navbar navbar-dark"style='border:5px solid white; background-color: black;'>
         <form class="container-fluid justify-content-start">
-             <a class="navbar-brand" onselectstart="return false" unselectable="on"><span unselectable="on" style="color:green">ip</span>protocol</a>
+             <a class="navbar-brand" onselectstart="return false" unselectable="on"><span unselectable="on" style="color:rgb(0, 0, 0); -webkit-text-stroke: 1px white">ip</span>protocol</a>
              <a href="{% url 'index' %}" role="button" class="btn btn-sm btn-outline-secondary me-2">My IP</a>
-             <button type="button" class="btn btn-outline-success" >Statistics</button>
+             <button type="button" class="btn btn-outline-dark" style="color:white; border-color:white;">Statistics</button>
          </form>
      </nav>
-     
-    <div class="container mx-auto" style="max-width:95%; margin-top: 80px;">
-        <div class="row"style="border:1px solid white;">
-            <div class="col" style="border:1px solid white; padding: 0; margin:0;">
-           
+    
+    <div class="container" style="border:5px solid white; max-width:95%; margin-top: 30px;">
+        <div class="d-flex flex-wrap mx-auto" style="margin-top: 30px; align-content: center;">
+            <div class="mx-auto" style="border:3px solid white; padding: 0; margin-top: 0; margin:10px; max-width:45vmax; max-height: 55vmin;  vertical-align:middle; text-align:center">
+                <p style="margin:0; color:white; font-size: 1.5vmax;">Visitors by countries</p>
+                <img src="../static/reguser/countries.png" style="max-width:100%; max-height:100%;">
             </div>
-            <div class="col" style="border:1px solid white;">
-                
-            </div>
+            <div class ='mx-auto'style="border:3px solid white; padding: 0; margin:10px; max-width:45vmax; max-height: 55vmin;  vertical-align:middle; text-align:center">
+                <p style="margin:0; color:white; font-size: 1.5vmax;">Protocol ratio</p>
+                <img src="../static/reguser/protocols.png" style="max-width:100%; max-height:100%;">   
+            </div> 
         </div>
-    </div>
 
-    <div class="container mx-auto" style="max-width:95%; margin-top: 80px;">
-        
+    <div class="container mx-auto" style="max-width:95%; margin-top: 30px; margin-bottom: 30px;">
+        <p class ="mx-auto"style="text-align:center; color:white; font-size: 2vmax;">Last 10 visitors</p>
         {% for record in visitors_output %}
-            <div class="row"style="border:1px solid white;">
-                <div class="col" style="background-color: aqua; padding: 0; margin:0; text-align: center;">{{ record }}</div>
-                <div class="col" style="background-color: aqua; padding: 0; margin:0; text-align: center;">{{ record.protocolField }}</div>
-                <div class="col" style="background-color: aqua; padding: 0; margin:0; text-align: center;">{{ record.countryField }}</div>
-                <div class="col" style="background-color: aqua; padding: 0; margin:0; text-align: center;">{{ record.cityField }}</div>
-                <div class="col" style="background-color: aqua; padding: 0; margin:0; text-align: center;">{{ record.date }}</div>
-                <div class="col" style="background-color: aqua; padding: 0; margin:0; text-align: center;">{{ record.time }}</div>
+            <div class="row"style="border:3px solid white; margin-bottom:10px; padding:3px; ">
+                <div class="col" style="color: white; background-color: black; padding: 0; margin:0; text-align: center;">{{ record }}</div>
+                <div class="col" style="color: white; background-color: black; padding: 0; margin:0; text-align: center;">{{ record.protocolField }}</div>
+                <div class="col" style="color: white; background-color: black; padding: 0; margin:0; text-align: center;">{{ record.countryField }}</div>
+                <div class="col" style="color: white; background-color: black; padding: 0; margin:0; text-align: center;">{{ record.cityField }}</div>
+                <div class="col" style="color: white; background-color: black; padding: 0; margin:0; text-align: center;">{{ record.date }}</div>
+                <div class="col" style="color: white; background-color: black; padding: 0; margin:0; text-align: center;">{{ record.time }}</div>
             </div>
             
         {% endfor %}
 
     </div> 
+
+
+    </div>
+    
+
+    
 
 </body>
 </html>

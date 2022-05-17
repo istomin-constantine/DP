@@ -4,8 +4,12 @@ from http import client
 from lib2to3.pgen2 import token
 from threading import Thread
 from urllib import response
+import matplotlib.font_manager as font_manager
 
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
+
 import numpy as np
 import requests
 from django.http import HttpResponse as hres
@@ -88,19 +92,45 @@ def statistics(request):
     visitors_output= visitors.objects.order_by('-id')[:10]
     
     ####################
-    vis = visitors.objects.values_list('countryField', flat=True)
+    vis_countries = visitors.objects.values_list('countryField', flat=True)
+    vis_protocols = visitors.objects.values_list('protocolField', flat=True)
     ####################
     
-    arr = ['Ukraine','Netherlands','Ukraine','Ukraine','Germany','Ukraine','Germany','Netherlands','Ukraine','France','Germany','Ukraine','France']
-    values, counts =  np.unique(vis, return_counts=True)   
+    
+    arr_countries = ['Ukraine','Netherlands','Ukraine','Ukraine','Germany','Ukraine','Germany','Netherlands','Ukraine','France','Germany','Ukraine','France']
+    arr_protocols = ['IPv4','IPv4','IPv6','IPv4','IPv4','IPv6','IPv4','IPv6','IPv4','IPv6','IPv4','IPv4','IPv4']
+    values_countries, counts_countries =  np.unique(arr_countries, return_counts=True)   
+    values_protocols, counts_protocols =  np.unique(arr_protocols, return_counts=True)   
+    
+    explode = []
+    colors = []
 
-    plt.pie(counts,labels=values,autopct='%1.1f%%')
-    plt.title('Countries')
+    for i in values_countries:
+        explode.append(0.05)
+        colors.append('black')
+    
+
+    fe = font_manager.FontEntry(
+        fname='reguser/static/reguser/BigBlue.ttf',
+        name='BigBlue')
+    font_manager.fontManager.ttflist.insert(0, fe)
+    plt.rcParams['font.family'] = fe.name
+    plt.rcParams['text.color'] = 'w'
+    plt.rcParams['font.size'] = 14
+
+    plt.clf()
+    plt.pie(counts_countries,labels=values_countries,colors=colors,explode=explode,autopct='%1.1f%%',
+    wedgeprops = {"edgecolor" : "white", 'linewidth': 2, 'antialiased': True})
     plt.axis('equal')
-    plt.savefig('reguser/static/reguser/countries.png')
+    plt.savefig('reguser/static/reguser/countries.png', dpi=171, transparent=True)
 
+    plt.clf()
 
-    print(values,counts)
+    plt.pie(counts_protocols,labels=values_protocols,colors=('black','black'),explode=(0.05,0.05),autopct='%1.1f%%',
+    wedgeprops = {"edgecolor" : "white", 'linewidth': 2, 'antialiased': True})
+    plt.axis('equal')
+    plt.savefig('reguser/static/reguser/protocols.png', dpi=171, transparent=True)
+
 
     return render(request, 'reguser/statistics.html', {'visitors_output': visitors_output})
 
